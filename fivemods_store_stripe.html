@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FiveMods — Acesso aos Mods</title>
+<style>
+:root{--bg:#050505;--card:#0d0d0d;--line:#292929;--txt:#fff;--muted:#999}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5}
+a{text-decoration:none;color:inherit}
+.container{width:min(1000px,92%);margin:auto}
+
+header{position:sticky;top:0;z-index:20;background:rgba(5,5,5,.95);border-bottom:1px solid #222}
+.nav{height:66px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:22px;font-weight:900}
+nav a{font-size:13px;font-weight:800;color:#fff;border:1px solid #333;padding:9px 13px;border-radius:8px}
+nav a:hover{background:#fff;color:#000}
+
+.hero{
+  position:relative;overflow:hidden;text-align:center;
+  padding:105px 0 85px;
+  background:linear-gradient(180deg,rgba(0,0,0,.48),#050505 95%),
+  url("https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=1800&q=85") center/cover;
+}
+.hero:before{
+  content:"";position:absolute;inset:-5%;
+  background:inherit;z-index:0;
+  animation:slowMove 18s ease-in-out infinite alternate;
+}
+.hero>.container{position:relative;z-index:1}
+@keyframes slowMove{
+  from{transform:scale(1.02) translate3d(-4px,0,0)}
+  to{transform:scale(1.08) translate3d(4px,-5px,0)}
+}
+h1{font-size:clamp(38px,7vw,66px);line-height:1;letter-spacing:-3px}
+.hero p{max-width:650px;margin:18px auto 28px;color:#bbb;font-size:15px}
+.btn{
+  display:inline-block;background:#fff;color:#000;font-weight:900;
+  padding:13px 21px;border-radius:8px;border:0;cursor:pointer
+}
+.btn:hover{background:#ddd}.owner-btn{margin-left:8px;background:#171717;color:#fff;border:1px solid #444}.owner-btn:hover{background:#fff;color:#000}
+
+section{padding:48px 0}
+.heading{text-align:center;margin-bottom:24px}
+.heading h2{font-size:30px;letter-spacing:-1px}
+.heading p{color:#888;font-size:13px;margin-top:5px}
+
+.access{
+  max-width:720px;margin:auto;background:var(--card);
+  border:1px solid #303030;border-radius:15px;padding:28px;text-align:center
+}
+.lock{
+  width:62px;height:62px;border:1px solid #444;border-radius:50%;
+  display:grid;place-items:center;margin:0 auto 16px;font-size:28px
+}
+.access h3{font-size:22px}
+.access p{color:#999;font-size:13px;margin:8px auto 20px;max-width:520px}
+.price{font-size:28px;font-weight:900;margin:8px 0 20px}
+.status{
+  margin-top:18px;padding:11px;border:1px solid #292929;
+  border-radius:8px;color:#777;font-size:11px
+}
+
+.mods{margin-top:26px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.mod{
+  position:relative;min-height:150px;border:1px solid #292929;
+  border-radius:12px;overflow:hidden;background:#0b0b0b;
+}
+.mod:before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.95)),
+  url("https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=900&q=80") center/cover;
+  filter:grayscale(1);opacity:.55
+}
+.mod-content{position:relative;z-index:1;height:100%;min-height:150px;display:flex;align-items:flex-end;padding:16px}
+.mod h4{font-size:15px}
+.mod span{display:block;color:#888;font-size:11px;margin-top:3px}
+
+.locked{
+  position:absolute;inset:0;z-index:2;display:grid;place-items:center;
+  background:rgba(0,0,0,.58);font-size:25px
+}
+
+footer{border-top:1px solid #222;margin-top:25px;padding:28px 0;text-align:center;color:#666;font-size:12px}
+
+@media(max-width:700px){.mods{grid-template-columns:1fr}.hero{padding:78px 0 65px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <div class="logo">FiveMods</div>
+    <nav style="display:flex;align-items:center;gap:8px">
+      <a href="https://discord.gg/Rzy2zudUr" target="_blank" rel="noopener">💬 Discord</a>
+      <select id="languageSelect" onchange="mudarIdioma(this.value)" aria-label="Escolher idioma"
+        style="background:#0b0b0b;color:#fff;border:1px solid #333;border-radius:8px;padding:9px 10px;font-weight:800;cursor:pointer">
+        <option value="pt-BR">🇧🇷 Português</option>
+        <option value="en">🇺🇸 English</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="fr">🇫🇷 Français</option>
+        <option value="de">🇩🇪 Deutsch</option>
+        <option value="it">🇮🇹 Italiano</option>
+        <option value="ja">🇯🇵 日本語</option>
+        <option value="ko">🇰🇷 한국어</option>
+        <option value="zh">🇨🇳 中文</option>
+        <option value="ru">🇷🇺 Русский</option>
+        <option value="ar">🇸🇦 العربية</option>
+        <option value="hi">🇮🇳 हिन्दी</option>
+        <option value="tr">🇹🇷 Türkçe</option>
+        <option value="nl">🇳🇱 Nederlands</option>
+        <option value="pl">🇵🇱 Polski</option>
+        <option value="id">🇮🇩 Bahasa Indonesia</option>
+      </select>
+      <a href="#acesso">Acessar Mods</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <h1>Mods para deixar de FiveM melhor</h1>
+    <p>Acesso aos mods liberado somente após a confirmação do pagamento.</p>
+    <a class="btn" href="#acesso">Liberar acesso</a>
+    <button class="btn owner-btn" type="button" onclick="abrirAcessoDono()">Acesso do dono</button>
+  </div>
+</section>
+
+<section id="suporte">
+  <div class="container">
+    <div class="access">
+      <div class="lock">💬</div>
+      <h3>Precisa de ajuda?</h3>
+      <p>Se tiver alguma dúvida sobre o pagamento, acesso ou instalação dos mods, fale conosco no Discord.</p>
+      <a class="btn" href="https://discord.gg/Rzy2zudUr" target="_blank" rel="noopener">Entrar no Discord</a>
+    </div>
+  </div>
+</section>
+
+<section id="acesso">
+  <div class="container">
+    <div class="heading">
+      <h2>Acesso aos Mods</h2>
+      <p>Faça o pagamento para liberar o conteúdo.</p>
+    </div>
+
+    <div class="access">
+      <div class="lock">🔒</div>
+      <h3>Conteúdo bloqueado</h3>
+      <p>O acesso aos mods permanece bloqueado até o pagamento ser confirmado pelo sistema.</p>
+
+      <div class="price">R$ 15,00</div>
+      <div style="border:1px solid #292929;border-radius:10px;padding:15px;margin:0 auto 18px;max-width:520px;text-align:center">
+        <div style="font-size:11px;color:#888">PAGAMENTO SEGURO</div>
+        <div style="font-size:14px;font-weight:800;margin-top:4px">💳 Pague com Stripe</div>
+      </div>
+      <a class="btn" id="stripeBtn" href="COLE_AQUI_SEU_LINK_STRIPE" target="_blank" rel="noopener">Pagar com Stripe</a>
+      <div id="pixStatus" class="status">💳 Faça o pagamento de R$ 15,00 pelo Stripe e aguarde a confirmação.</div>
+    </div>
+
+    <div class="access" style="margin-top:18px">
+      <div class="lock">🔒</div>
+      <h3>Downloads bloqueados</h3>
+      <p>Os downloads ficam disponíveis somente depois que o pagamento de R$ 15,00 for confirmado.</p>
+      <div style="border:1px solid #292929;border-radius:10px;padding:15px;margin:16px 0;text-align:center">
+        <div style="font-size:11px;color:#888">PAGAMENTO</div>
+        <div style="font-size:14px;font-weight:800;margin-top:4px">Pagamento feito pelo Stripe</div>
+      </div>
+      <button class="btn" type="button" onclick="verificarPagamento()">Já fiz o pagamento</button>
+      <div id="paymentStatus" class="status">🔒 Acesso bloqueado até a confirmação do pagamento</div>
+    </div>
+  </div>
+</section>
+
+<section id="ownerLogin" style="display:none">
+  <div class="container">
+    <div class="access">
+      <div class="lock">🔑</div>
+      <h3>Acesso do dono</h3>
+      <p>Área reservada para o proprietário do site.</p>
+      <input id="ownerPassword" type="password" placeholder="Digite sua senha"
+        style="width:100%;max-width:420px;padding:13px;border:1px solid #333;border-radius:8px;background:#080808;color:#fff;margin:10px 0 12px;outline:none">
+      <br>
+      <button class="btn" type="button" onclick="entrarComoDono()">Entrar</button>
+      <div id="ownerStatus" class="status">🔒 Acesso protegido por senha</div>
+    </div>
+  </div>
+</section>
+
+<section id="downloads" style="display:none">
+  <div class="container">
+    <div class="heading">
+      <h2>Downloads dos Mods</h2>
+      <p>Seu acesso foi confirmado.</p>
+    </div>
+    <div class="access">
+      <div class="lock">📦</div>
+      <h3>Mods liberados</h3>
+      <p>O arquivo do mod está disponível abaixo.</p>
+      <a class="btn" href="https://drive.google.com/file/d/1T_Q-qoedZM9QGLFKNmofpEwKdB2EBVML/view?usp=sharing" target="_blank" rel="noopener">
+        Baixar o Mod
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  FiveMods — Conteúdo independente para FiveM.
+</footer>
+
+<script>
+const STRIPE_LINK = "COLE_AQUI_SEU_LINK_STRIPE";
+
+function verificarPagamento(){
+  const status = document.getElementById("paymentStatus");
+  status.textContent = "⏳ Verificando pagamento...";
+  /*
+    A liberação real deve acontecer aqui após uma confirmação do servidor.
+    O navegador NÃO deve liberar os downloads apenas porque o usuário clicou.
+    Conecte este botão a um backend/webhook que consulte o pagamento.
+  */
+  setTimeout(()=>{
+    status.textContent = "🔒 Pagamento ainda não confirmado. O acesso será liberado após a confirmação.";
+  }, 800);
+}
+
+// Esta função deve ser chamada SOMENTE pelo fluxo de confirmação do pagamento.
+// O clique em "Já fiz o pagamento" nunca libera o download sozinho.
+function liberarDownloads(){
+  document.getElementById("downloads").style.display = "block";
+  document.getElementById("downloads").scrollIntoView({behavior:"smooth"});
+  document.getElementById("paymentStatus").textContent = "✅ Pagamento confirmado! Seus downloads estão liberados.";
+}
+
+const OWNER_PASSWORD = "777";
+
+function abrirAcessoDono(){
+  const box = document.getElementById("ownerLogin");
+  box.style.display = "block";
+  box.scrollIntoView({behavior:"smooth"});
+  setTimeout(() => document.getElementById("ownerPassword").focus(), 300);
+}
+
+function entrarComoDono(){
+  const senha = document.getElementById("ownerPassword").value;
+  const status = document.getElementById("ownerStatus");
+
+  if(senha === OWNER_PASSWORD){
+    document.getElementById("downloads").style.display = "block";
+    status.textContent = "✅ Acesso do dono liberado!";
+    document.getElementById("downloads").scrollIntoView({behavior:"smooth"});
+  } else {
+    status.textContent = "❌ Senha incorreta.";
+  }
+}
+
+const stripeBtnEl = document.getElementById("stripeBtn");
+if (stripeBtnEl) stripeBtnEl.href = STRIPE_LINK;
+
+document.getElementById("ownerPassword")?.addEventListener("keydown", function(e){
+  if(e.key === "Enter") entrarComoDono();
+});
+
+
+const translations = {
+  "pt-BR": {
+    title:"Mods para deixar de FiveM melhor", hero:"Acesso aos mods liberado somente após a confirmação do pagamento.",
+    access:"Acessar Mods", release:"Liberar acesso", accessTitle:"Acesso aos Mods",
+    payText:"Faça o pagamento para liberar o conteúdo.", locked:"Conteúdo bloqueado",
+    lockedText:"O acesso aos mods permanece bloqueado até o pagamento ser confirmado pelo sistema.",
+    stripe:"Pagar com Stripe", discord:"💬 Discord", help:"Precisa de ajuda?",
+    helpText:"Se tiver alguma dúvida sobre o pagamento, acesso ou instalação dos mods, fale conosco no Discord.",
+    enterDiscord:"Entrar no Discord", downloads:"Downloads dos Mods", confirmed:"Seu acesso foi confirmado.",
+    mods:"Mods liberados", download:"Baixar o Mod"
+  },
+  en: {title:"Mods to make your FiveM better",hero:"Access is released only after payment confirmation.",access:"Access Mods",release:"Unlock access",accessTitle:"Mods Access",payText:"Make the payment to unlock the content.",locked:"Content locked",lockedText:"Access remains locked until payment is confirmed.",stripe:"Pay with Stripe",discord:"💬 Discord",help:"Need help?",helpText:"If you have questions about payment, access or installing the mods, contact us on Discord.",enterDiscord:"Join Discord",downloads:"Mod Downloads",confirmed:"Your access has been confirmed.",mods:"Mods unlocked",download:"Download Mod"},
+  es: {title:"Mods para mejorar tu FiveM",hero:"El acceso se libera después de confirmar el pago.",access:"Acceder a los Mods",release:"Liberar acceso",accessTitle:"Acceso a los Mods",payText:"Realiza el pago para desbloquear el contenido.",locked:"Contenido bloqueado",lockedText:"El acceso permanece bloqueado hasta confirmar el pago.",stripe:"Pagar con Stripe",discord:"💬 Discord",help:"¿Necesitas ayuda?",helpText:"Si tienes dudas sobre el pago, acceso o instalación, contáctanos por Discord.",enterDiscord:"Entrar en Discord",downloads:"Descargas de Mods",confirmed:"Tu acceso ha sido confirmado.",mods:"Mods desbloqueados",download:"Descargar Mod"},
+  fr: {title:"Mods pour améliorer votre FiveM",hero:"L'accès est débloqué après confirmation du paiement.",access:"Accéder aux Mods",release:"Débloquer l'accès",accessTitle:"Accès aux Mods",payText:"Effectuez le paiement pour débloquer le contenu.",locked:"Contenu verrouillé",lockedText:"L'accès reste verrouillé jusqu'à la confirmation du paiement.",stripe:"Payer avec Stripe",discord:"💬 Discord",help:"Besoin d'aide ?",helpText:"Pour toute question sur le paiement, l'accès ou l'installation, contactez-nous sur Discord.",enterDiscord:"Rejoindre Discord",downloads:"Téléchargements des Mods",confirmed:"Votre accès a été confirmé.",mods:"Mods débloqués",download:"Télécharger le Mod"},
+  de: {title:"Mods für ein besseres FiveM",hero:"Der Zugriff wird nach Zahlungsbestätigung freigeschaltet.",access:"Mods öffnen",release:"Zugriff freischalten",accessTitle:"Mods-Zugriff",payText:"Bezahlen Sie, um den Inhalt freizuschalten.",locked:"Inhalt gesperrt",lockedText:"Der Zugriff bleibt gesperrt, bis die Zahlung bestätigt wurde.",stripe:"Mit Stripe bezahlen",discord:"💬 Discord",help:"Brauchst du Hilfe?",helpText:"Bei Fragen zu Zahlung, Zugriff oder Installation kontaktiere uns über Discord.",enterDiscord:"Discord beitreten",downloads:"Mod-Downloads",confirmed:"Dein Zugriff wurde bestätigt.",mods:"Mods freigeschaltet",download:"Mod herunterladen"},
+  it: {title:"Mods per migliorare il tuo FiveM",hero:"L'accesso viene sbloccato dopo la conferma del pagamento.",access:"Accedi ai Mods",release:"Sblocca accesso",accessTitle:"Accesso ai Mods",payText:"Effettua il pagamento per sbloccare il contenuto.",locked:"Contenuto bloccato",lockedText:"L'accesso resta bloccato fino alla conferma del pagamento.",stripe:"Paga con Stripe",discord:"💬 Discord",help:"Hai bisogno di aiuto?",helpText:"Per domande su pagamento, accesso o installazione, contattaci su Discord.",enterDiscord:"Entra in Discord",downloads:"Download dei Mods",confirmed:"Il tuo accesso è stato confermato.",mods:"Mods sbloccati",download:"Scarica il Mod"},
+  ja: {title:"FiveMをもっと良くするMod",hero:"支払い確認後にアクセスが解除されます。",access:"Modにアクセス",release:"アクセスを解除",accessTitle:"Modへのアクセス",payText:"支払いを完了してコンテンツを解除してください。",locked:"コンテンツはロックされています",lockedText:"支払いが確認されるまでアクセスできません。",stripe:"Stripeで支払う",discord:"💬 Discord",help:"サポートが必要ですか？",helpText:"支払い、アクセス、インストールについて質問がある場合はDiscordでお問い合わせください。",enterDiscord:"Discordに参加",downloads:"Modダウンロード",confirmed:"アクセスが確認されました。",mods:"Modが解除されました",download:"Modをダウンロード"},
+  ko: {title:"FiveM을 더 좋게 만드는 Mods",hero:"결제가 확인되면 액세스가 해제됩니다.",access:"Mods 이용",release:"액세스 해제",accessTitle:"Mods 액세스",payText:"결제 후 콘텐츠를 이용할 수 있습니다.",locked:"콘텐츠 잠김",lockedText:"결제가 확인될 때까지 액세스가 잠겨 있습니다.",stripe:"Stripe로 결제",discord:"💬 Discord",help:"도움이 필요하신가요?",helpText:"결제, 액세스 또는 설치에 대한 질문은 Discord로 문의하세요.",enterDiscord:"Discord 입장",downloads:"Mods 다운로드",confirmed:"액세스가 확인되었습니다.",mods:"Mods 잠금 해제",download:"Mod 다운로드"},
+  zh: {title:"让你的 FiveM 更好的 Mods",hero:"付款确认后即可解锁访问权限。",access:"访问 Mods",release:"解锁访问",accessTitle:"Mods 访问",payText:"完成付款以解锁内容。",locked:"内容已锁定",lockedText:"确认付款前无法访问内容。",stripe:"使用 Stripe 支付",discord:"💬 Discord",help:"需要帮助吗？",helpText:"如果对付款、访问或安装有疑问，请通过 Discord 联系我们。",enterDiscord:"加入 Discord",downloads:"Mods 下载",confirmed:"您的访问已确认。",mods:"Mods 已解锁",download:"下载 Mod"},
+  ru: {title:"Моды для улучшения FiveM",hero:"Доступ открывается после подтверждения оплаты.",access:"Доступ к модам",release:"Открыть доступ",accessTitle:"Доступ к модам",payText:"Оплатите, чтобы открыть содержимое.",locked:"Контент заблокирован",lockedText:"Доступ заблокирован до подтверждения оплаты.",stripe:"Оплатить через Stripe",discord:"💬 Discord",help:"Нужна помощь?",helpText:"Если у вас есть вопросы об оплате, доступе или установке, напишите нам в Discord.",enterDiscord:"Войти в Discord",downloads:"Загрузки модов",confirmed:"Доступ подтверждён.",mods:"Моды разблокированы",download:"Скачать мод"},
+  ar: {title:"Mods لتحسين FiveM",hero:"يتم فتح الوصول بعد تأكيد الدفع.",access:"الوصول إلى Mods",release:"فتح الوصول",accessTitle:"الوصول إلى Mods",payText:"أكمل الدفع لفتح المحتوى.",locked:"المحتوى مقفل",lockedText:"يبقى الوصول مقفلاً حتى تأكيد الدفع.",stripe:"الدفع عبر Stripe",discord:"💬 Discord",help:"هل تحتاج إلى مساعدة؟",helpText:"إذا كانت لديك أسئلة حول الدفع أو الوصول أو التثبيت، تواصل معنا عبر Discord.",enterDiscord:"الدخول إلى Discord",downloads:"تنزيلات Mods",confirmed:"تم تأكيد وصولك.",mods:"تم فتح Mods",download:"تنزيل Mod"},
+  hi: {title:"FiveM को बेहतर बनाने वाले Mods",hero:"भुगतान की पुष्टि के बाद एक्सेस उपलब्ध होगा।",access:"Mods एक्सेस",release:"एक्सेस खोलें",accessTitle:"Mods एक्सेस",payText:"कंटेंट अनलॉक करने के लिए भुगतान करें।",locked:"कंटेंट लॉक है",lockedText:"भुगतान की पुष्टि होने तक एक्सेस लॉक रहेगा।",stripe:"Stripe से भुगतान करें",discord:"💬 Discord",help:"मदद चाहिए?",helpText:"भुगतान, एक्सेस या इंस्टॉलेशन के बारे में सवाल हों तो Discord पर संपर्क करें।",enterDiscord:"Discord में जाएँ",downloads:"Mods डाउनलोड",confirmed:"आपका एक्सेस पुष्टि हो गया है।",mods:"Mods अनलॉक",download:"Mod डाउनलोड करें"},
+  tr: {title:"FiveM'i geliştirecek Modlar",hero:"Erişim, ödeme onaylandıktan sonra açılır.",access:"Modlara Eriş",release:"Erişimi Aç",accessTitle:"Mod Erişimi",payText:"İçeriği açmak için ödeme yapın.",locked:"İçerik kilitli",lockedText:"Ödeme onaylanana kadar erişim kilitli kalır.",stripe:"Stripe ile öde",discord:"💬 Discord",help:"Yardıma mı ihtiyacınız var?",helpText:"Ödeme, erişim veya kurulum hakkında sorularınız varsa Discord'dan bize ulaşın.",enterDiscord:"Discord'a Katıl",downloads:"Mod İndirmeleri",confirmed:"Erişiminiz onaylandı.",mods:"Modlar açıldı",download:"Modu İndir"},
+  nl: {title:"Mods om je FiveM beter te maken",hero:"Toegang wordt vrijgegeven na betalingsbevestiging.",access:"Mods openen",release:"Toegang vrijgeven",accessTitle:"Mods-toegang",payText:"Betaal om de inhoud te ontgrendelen.",locked:"Inhoud vergrendeld",lockedText:"Toegang blijft vergrendeld totdat de betaling is bevestigd.",stripe:"Betalen met Stripe",discord:"💬 Discord",help:"Hulp nodig?",helpText:"Neem bij vragen over betaling, toegang of installatie contact met ons op via Discord.",enterDiscord:"Naar Discord",downloads:"Mods downloaden",confirmed:"Je toegang is bevestigd.",mods:"Mods ontgrendeld",download:"Mod downloaden"},
+  pl: {title:"Mody, które ulepszą FiveM",hero:"Dostęp zostanie odblokowany po potwierdzeniu płatności.",access:"Dostęp do modów",release:"Odblokuj dostęp",accessTitle:"Dostęp do modów",payText:"Dokonaj płatności, aby odblokować zawartość.",locked:"Zawartość zablokowana",lockedText:"Dostęp pozostaje zablokowany do czasu potwierdzenia płatności.",stripe:"Zapłać przez Stripe",discord:"💬 Discord",help:"Potrzebujesz pomocy?",helpText:"W sprawie płatności, dostępu lub instalacji skontaktuj się z nami na Discordzie.",enterDiscord:"Dołącz do Discorda",downloads:"Pobieranie modów",confirmed:"Dostęp został potwierdzony.",mods:"Mody odblokowane",download:"Pobierz moda"},
+  id: {title:"Mod untuk membuat FiveM lebih baik",hero:"Akses dibuka setelah pembayaran dikonfirmasi.",access:"Akses Mod",release:"Buka akses",accessTitle:"Akses Mod",payText:"Lakukan pembayaran untuk membuka konten.",locked:"Konten terkunci",lockedText:"Akses tetap terkunci sampai pembayaran dikonfirmasi.",stripe:"Bayar dengan Stripe",discord:"💬 Discord",help:"Butuh bantuan?",helpText:"Jika ada pertanyaan tentang pembayaran, akses, atau instalasi, hubungi kami di Discord.",enterDiscord:"Masuk Discord",downloads:"Unduhan Mod",confirmed:"Akses Anda telah dikonfirmasi.",mods:"Mod terbuka",download:"Unduh Mod"}
+};
+
+function mudarIdioma(lang){
+  const t = translations[lang] || translations["pt-BR"];
+  document.documentElement.lang = lang;
+  document.documentElement.dir = (lang === "ar") ? "rtl" : "ltr";
+
+  const h1 = document.querySelector(".hero h1");
+  const heroP = document.querySelector(".hero p");
+  const heroBtn = document.querySelector(".hero .btn");
+  if(h1) h1.textContent=t.title;
+  if(heroP) heroP.textContent=t.hero;
+  if(heroBtn) heroBtn.textContent=t.release;
+
+  const accessHeading = document.querySelector("#acesso .heading h2");
+  const accessDesc = document.querySelector("#acesso .heading p");
+  const accessH3 = document.querySelector("#acesso .access h3");
+  if(accessHeading) accessHeading.textContent=t.accessTitle;
+  if(accessDesc) accessDesc.textContent=t.payText;
+  if(accessH3) accessH3.textContent=t.locked;
+
+  const stripeBtn = document.getElementById("stripeBtn");
+  if(stripeBtn) stripeBtn.textContent=t.stripe;
+
+  const supportH3 = document.querySelector("#suporte h3");
+  const supportP = document.querySelector("#suporte p");
+  const supportBtn = document.querySelector("#suporte .btn");
+  if(supportH3) supportH3.textContent=t.help;
+  if(supportP) supportP.textContent=t.helpText;
+  if(supportBtn) supportBtn.textContent=t.enterDiscord;
+
+  const dlHeading = document.querySelector("#downloads .heading h2");
+  const dlDesc = document.querySelector("#downloads .heading p");
+  const dlH3 = document.querySelector("#downloads .access h3");
+  const dlP = document.querySelector("#downloads .access p");
+  const dlBtn = document.querySelector("#downloads .btn");
+  if(dlHeading) dlHeading.textContent=t.downloads;
+  if(dlDesc) dlDesc.textContent=t.confirmed;
+  if(dlH3) dlH3.textContent=t.mods;
+  if(dlP) dlP.textContent=t.confirmed;
+  if(dlBtn) dlBtn.textContent=t.download;
+}
+
+</script>
+
+</body>
+</html>
